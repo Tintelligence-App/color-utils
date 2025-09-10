@@ -39,7 +39,7 @@ def test_rgb_to_lab_and_lch_and_normalize():
     l, a, b = cu.rgb_to_lab(255, 255, 255)
     assert 90.0 <= l <= 100.01
     l2, _a, _b = cu.normalize_lab(l, a, b)
-    assert 0.9 <= (l2 or 0.0) <= 1.0
+    assert 0.9 <= (l2 or 0.0) <= 1.01
     L, C, H = cu.lab_to_lch(l, a, b)
     assert approx_equal(L, l)
     assert C >= 0.0

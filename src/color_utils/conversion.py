@@ -78,7 +78,9 @@ def rgb_to_lab(r: int, g: int, b: int) -> Tuple[float, float, float]:
     fy = f(y / yn)
     fz = f(z / zn)
 
-    l = max(0.0, 116 * fy - 16)
+    l = 116 * fy - 16
+    # clamp to valid L range to avoid tiny floating point drift
+    l = min(100.0, max(0.0, l))
     a = 500 * (fx - fy)
     b = 200 * (fy - fz)
     return l, a, b
@@ -92,7 +94,9 @@ def normalize_lab(
     def norm_l(v: Optional[float]) -> Optional[float]:
         if v is None:
             return None
-        return v / 100.0 if v > 1.0 else v
+        # if already normalized, keep within [0,1]; else divide by 100 and cap
+        vv = v if v <= 1.0 else v / 100.0
+        return min(1.0, max(0.0, vv))
 
     def norm_ab(v: Optional[float]) -> Optional[float]:
         if v is None:
@@ -125,7 +129,9 @@ def rgb_to_hsl(r: int, g: int, b: int) -> Tuple[int, int, int]:
     return int(round(h) % 360), int(round(s * 100)), int(round(l * 100))
 
 
-def lab_to_lch(l_value: float, a_value: float, b_value: float) -> Tuple[float, float, float]:
+def lab_to_lch(
+    l_value: float, a_value: float, b_value: float
+) -> Tuple[float, float, float]:
     """Convert CIE Lab to LCH(ab). Returns (L, C, H_deg)."""
     c = math.sqrt((a_value or 0.0) ** 2 + (b_value or 0.0) ** 2)
     h_rad = math.atan2((b_value or 0.0), (a_value or 0.0))

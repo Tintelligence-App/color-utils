@@ -26,7 +26,7 @@ def get_color_family(hue: float, saturation: float, value: float) -> str:
         return "Yellow"
     elif hue_deg < 160:
         return "Green"
-    elif hue_deg < 200:
+    elif hue_deg < 180:
         return "Turquoise / Teal"
     elif hue_deg < 240:
         return "Blue"
