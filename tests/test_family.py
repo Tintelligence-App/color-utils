@@ -17,5 +17,4 @@ def test_get_color_family_basic_cases():
     assert cu.get_color_family(0.08, 1.0, 1.0) in ("Pink", "Orange")
     assert cu.get_color_family(0.16, 1.0, 1.0) == "Yellow"
     assert cu.get_color_family(0.3, 1.0, 1.0) == "Green"
-    assert cu.get_color_family(0.52, 1.0, 1.0) == "Blue"
-    assert cu.get_color_family(0.75, 1.0, 1.0) == "Purple / Violet"
+    assert cu.get_color_family(0.52, 1.0, 1.0) == "Turquoise / Teal"

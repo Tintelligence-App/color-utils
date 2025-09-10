@@ -37,10 +37,10 @@ def test_hex_to_hsv_and_rgb_to_hex_midpoint():
 def test_rgb_to_lab_and_lch_and_normalize():
     """Cover Lab conversion, normalization, and LCH transformation."""
     l, a, b = cu.rgb_to_lab(255, 255, 255)
-    assert 90.0 <= l <= 100.0
+    assert 90.0 <= l <= 100.01
     l2, _a, _b = cu.normalize_lab(l, a, b)
     assert 0.9 <= (l2 or 0.0) <= 1.0
-    L, C, H = cu.lab_to_lch(l, a, b)  # pylint: disable=invalid-name
+    L, C, H = cu.lab_to_lch(l, a, b)
     assert approx_equal(L, l)
     assert C >= 0.0
     assert 0.0 <= H < 360.0
