@@ -28,9 +28,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/tintelligence/color-utils"
-Repository = "https://github.com/tintelligence/color-utils"
-Issues = "https://github.com/tintelligence/color-utils/issues"
+Homepage = "https://github.com/Tintelligence-App/color-utils"
+Repository = "https://github.com/Tintelligence-App/color-utils"
+Issues = "https://github.com/Tintelligence-App/color-utils/issues"
 
 [project.optional-dependencies]
 dev = [
