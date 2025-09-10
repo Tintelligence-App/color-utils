@@ -23,7 +23,7 @@ If you need `QColor` helpers, install with one of the extras:
 ## Quick start
 
 ```python
-from color_utils import hex_to_hsv, get_color_family
+from tintelligence_color_utils import hex_to_hsv, get_color_family
 
 h, s, v = hex_to_hsv("#FF7F00")
 print(h, s, v)
