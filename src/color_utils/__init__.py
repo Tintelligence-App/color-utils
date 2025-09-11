@@ -1,6 +1,6 @@
 """tintelligence-color-utils package."""
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from .conversion import (
     brightness_from_hex,
@@ -15,7 +15,14 @@ from .conversion import (
 )
 from .family import get_color_family
 from .shades import get_darker_shades
-from .sorting import sort_paints_by_color, sort_paints_by_family_value_hue
+from .sorting import (
+    sort_paints_by_color,
+    sort_paints_by_family_lab_brightness,
+    sort_paints_by_family_value_hue,
+)
+
+# Backwards-compatible alias for the previous longer name
+sort_paints_by_family_lab_brightness_hue = sort_paints_by_family_lab_brightness
 
 __all__ = [
     "__version__",
@@ -34,6 +41,8 @@ __all__ = [
     # sorting
     "sort_paints_by_color",
     "sort_paints_by_family_value_hue",
+    "sort_paints_by_family_lab_brightness",
+    "sort_paints_by_family_lab_brightness_hue",
     # shades
     "get_darker_shades",
 ]

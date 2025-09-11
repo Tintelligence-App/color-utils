@@ -23,7 +23,7 @@ If you need `QColor` helpers, install with one of the extras:
 ## Quick start
 
 ```python
-from tintelligence_color_utils import hex_to_hsv, get_color_family
+from color_utils import hex_to_hsv, get_color_family
 
 h, s, v = hex_to_hsv("#FF7F00")
 print(h, s, v)
@@ -56,6 +56,8 @@ All functions are available from `color_utils` top-level import.
 ### Color families
 - `get_color_family(hue: float, saturation: float, value: float) -> str`
   - Assign a color family based on HSV, with handling for dark and muted tones. Families include e.g. "Black", "Grey", "White / Off-white", "Red", "Pink", "Orange", "Yellow", "Green", "Turquoise / Teal", "Blue", "Purple / Violet", "Brown", "Unknown".
+- `color_utils.families.COLOR_FAMILY_ID_ORDER`
+  - Reusable order loaded from `src/color_families.json`.
 
 ### Shades
 - `get_darker_shades(hex_code: str, steps: int = 2, factor: float = 0.8) -> tuple[str, ...]`
@@ -63,9 +65,11 @@ All functions are available from `color_utils` top-level import.
 
 ### Sorting
 - `sort_paints_by_color(paints: list[dict], mode: str = "hue") -> list[dict]`
-  - Sort a list of paint dicts by `"hue"`, `"saturation"`, or `"value"`. Expects a `"color_primary"` hex field.
-- `sort_paints_by_family_value_hue(paints: list[dict]) -> list[dict]`
-  - Group by color family, then sort by value (desc) and hue (asc). Adds `_hsv` and `_family` keys to returned items.
+  - Sort a list of paint dicts by `"hue"`, `"saturation"`, or `"value"`. Expects `hsv_h`, `hsv_s`, `hsv_v` fields.
+- `sort_paints_by_family_value_hue(paints: list[dict], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark") -> list[dict]`
+  - Group by `color_family_id` (using `COLOR_FAMILY_ID_ORDER`), then sort by HSV V in the chosen order, tie-breaking by HSV H. Returns items enriched with `_hsv` and `_family`.
+- `sort_paints_by_family_lab_brightness(paints: list[dict], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark") -> list[dict]`
+  - Group by `color_family_id` (ordered via `COLOR_FAMILY_ID_ORDER`), then sort by Lab L in the chosen order, tie-breaking by `hsv_h` if present.
 
 ### Qt helper (optional)
 - `color_utils.qcolor.to_qcolor(color) -> QColor`
