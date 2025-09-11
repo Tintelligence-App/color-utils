@@ -1,6 +1,6 @@
 """tintelligence-color-utils package."""
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 from .conversion import (
     brightness_from_hex,

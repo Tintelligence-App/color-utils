@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tintelligence-color-utils"
-version = "0.1.1"
+version = "0.1.2"
 description = "Utility functions for working with colors (conversion, manipulation, validation)."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -45,17 +45,17 @@ qt_pyqt6 = [
 ]
 
 [tool.hatch.version]
-path = "src/color_utils/__init__.py"
+path = "src/tintelligence_color_utils/__init__.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
-  "/src/color_utils",
+  "/src/tintelligence_color_utils",
   "/README.md",
   "/LICENSE"
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/color_utils"]
+packages = ["src/tintelligence_color_utils"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
