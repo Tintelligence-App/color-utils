@@ -23,6 +23,8 @@ If you need `QColor` helpers, install with one of the extras:
 ## Quick start
 
 ```python
+from tintelligence_color_utils import hex_to_hsv, get_color_family
+# or
 from color_utils import hex_to_hsv, get_color_family
 
 h, s, v = hex_to_hsv("#FF7F00")
@@ -31,7 +33,7 @@ print(get_color_family(h, s, v))
 ```
 
 ## API Reference
-All functions are available from `color_utils` top-level import.
+All functions are available from `color_utils` or `tintelligence_color_utils` top-level import.
 
 ### Conversion
 
@@ -139,18 +141,26 @@ Sort a list of paint dicts by `"hue"`, `"saturation"`, or `"value"`. Expects `hs
 #### Group paints by color family and sort by hue
 
 ```python
-sort_paints_by_family_value_hue(paints: list[dict], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark") -> list[dict]
+sort_paints_by_family_value_hue(
+    paints: list[dict],
+    order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark",
+    color_families: list[dict] | None = None,
+) -> list[dict]
 ```
 
-Group by `color_family_id` (using `COLOR_FAMILY_ID_ORDER`), then sort by HSV V in the chosen order, tie-breaking by HSV H. Returns items enriched with `_hsv` and `_family`.
+Group by `color_family_id` (using the provided `color_families` order if given; otherwise numeric id order), then sort by HSV V in the chosen order, tie-breaking by HSV H. Returns items enriched with `_hsv` and `_family` when `color_families` is provided.
 
 #### Group paints by color family and sort by LAB brightness
 
 ```python
-sort_paints_by_family_lab_brightness(paints: list[dict], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_bright") -> list[dict]
+sort_paints_by_family_lab_brightness(
+    paints: list[dict],
+    order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark",
+    color_families: list[dict] | None = None,
+) -> list[dict]
 ```
 
-Group by `color_family_id` (ordered via `COLOR_FAMILY_ID_ORDER`), then sort by Lab L in the chosen order, tie-breaking by `hsv_h` if present.
+Group by `color_family_id` (using the provided `color_families` order if given; otherwise numeric id order), then sort by Lab L in the chosen order, tie-breaking by `hsv_h` if present.
 
 #### Sort HEX colors by brightness
 
