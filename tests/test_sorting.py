@@ -2,7 +2,7 @@
 
 from importlib import import_module
 
-cu = import_module("color_utils")
+cu = import_module("tintelligence_color_utils")
 
 
 def test_sort_paints_by_color_modes():
@@ -73,3 +73,12 @@ def test_sort_paints_by_family_lab_brightness_order_param():
         "dark red",
         "bright red",
     ]
+
+
+def test_sort_hex_by_brightness():
+    """Hex sorting should order by perceived brightness and place invalids last."""
+    colors = ["#000000", "#FFFFFF", "#808080", "#zzzzzz"]
+    out_bright = cu.sort_hex_by_brightness(colors, order="bright_to_dark")
+    assert out_bright[:2] == ["#FFFFFF", "#808080"] and out_bright[-1] == "#zzzzzz"
+    out_dark = cu.sort_hex_by_brightness(colors, order="dark_to_bright")
+    assert out_dark[:2] == ["#000000", "#808080"] and out_dark[-1] == "#zzzzzz"

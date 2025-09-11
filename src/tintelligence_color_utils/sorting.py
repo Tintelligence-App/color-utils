@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Dict, List, Literal
 
+from .conversion import brightness_from_hex
 from .families import COLOR_FAMILY_ID_ORDER, COLOR_FAMILY_ID_TO_NAME
 
 
@@ -99,3 +100,23 @@ def sort_paints_by_family_lab_brightness(
         )
 
     return sorted(enriched, key=sort_key)
+
+
+def sort_hex_by_brightness(
+    hex_codes: List[str],
+    order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark",
+) -> List[str]:
+    """Return hex codes sorted by perceived brightness (Lab L).
+
+    Invalid hex codes are ranked last regardless of order.
+    """
+    brightness_sign = -1 if order == "bright_to_dark" else 1
+
+    def key_fn(code: str):
+        l = brightness_from_hex(code)
+        return (
+            1 if l is None else 0,  # invalids at the end
+            brightness_sign * (l or 0.0),
+        )
+
+    return sorted(hex_codes, key=key_fn)

@@ -34,46 +34,141 @@ print(get_color_family(h, s, v))
 All functions are available from `color_utils` top-level import.
 
 ### Conversion
-- `hex_to_rgb(hex_code: str) -> tuple[float, float, float]`
-  - Convert `#RRGGBB` or `RRGGBB` to an `(r, g, b)` tuple in `[0, 1]`. Raises `ValueError` on invalid input.
-- `hex_to_hsv(hex_code: str) -> tuple[float, float, float]`
-  - Convert a hex color to HSV `(h, s, v)` where `h ∈ [0,1]`.
-- `rgb_to_hex(r: int, g: int, b: int) -> str`
-  - Convert integer RGB (0-255) to `#RRGGBB`.
-- `hex_midpoint(c1: str | None, c2: str | None) -> str | None`
-  - Midpoint between two hex colors as `#RRGGBB`. Returns `None` if inputs are invalid.
-- `rgb_to_lab(r: int, g: int, b: int) -> tuple[float, float, float]`
-  - Approximate sRGB (D65) to CIE L*a*b* with `L ∈ [0..100]`.
-- `normalize_lab(l: float | None, a: float | None, b: float | None) -> tuple[float | None, float | None, float | None]`
-  - Normalize Lab to `[0,1]` each. `L/100`, and `a,b` via `(v+128)/255` when needed.
-- `rgb_to_hsl(r: int, g: int, b: int) -> tuple[int, int, int]`
-  - Convert RGB (0-255) to HSL where `H ∈ [0..360]`, `S,L ∈ [0..100]` (ints).
-- `lab_to_lch(l: float, a: float, b: float) -> tuple[float, float, float]`
-  - Convert CIE Lab to LCH(ab) `(L, C, H_deg)`.
-- `brightness_from_hex(hex_color: str) -> float | None`
-  - Perceived brightness (Lab L) from a hex color. Higher means brighter.
+
+#### HEX to RGB
+
+```python
+hex_to_rgb(hex_code: str) -> tuple[float, float, float]
+```
+
+Convert `#RRGGBB` or `RRGGBB` to an `(r, g, b)` tuple in `[0, 1]`. Raises `ValueError` on invalid input.
+
+#### HEX to HSV
+
+```python
+hex_to_hsv(hex_code: str) -> tuple[float, float, float]
+```
+
+Convert a hex color to HSV `(h, s, v)` where `h ∈ [0,1]`.
+
+#### Integer RGB to HEX
+
+```python
+rgb_to_hex(r: int, g: int, b: int) -> str
+```
+
+Convert integer RGB (0-255) to `#RRGGBB`.
+
+#### HEX midpoint
+
+```python
+hex_midpoint(c1: str | None, c2: str | None) -> str | None
+```
+
+Midpoint between two hex colors as `#RRGGBB`. Returns `None` if inputs are invalid.
+
+#### RGB to LAB
+
+```python
+rgb_to_lab(r: int, g: int, b: int) -> tuple[float, float, float]
+```
+
+Approximate sRGB (D65) to CIE L*a*b* with `L ∈ [0..100]`.
+
+#### Normalize LAB
+
+```python
+normalize_lab(l: float | None, a: float | None, b: float | None) -> tuple[float | None, float | None, float | None]
+```
+
+Normalize Lab to `[0,1]` each. `L/100`, and `a,b` via `(v+128)/255` when needed.
+
+#### RGB to HSL
+
+```python
+rgb_to_hsl(r: int, g: int, b: int) -> tuple[int, int, int]
+```
+
+Convert RGB (0-255) to HSL where `H ∈ [0..360]`, `S,L ∈ [0..100]` (ints).
+
+#### LAB to LCH
+
+```python
+lab_to_lch(l: float, a: float, b: float) -> tuple[float, float, float]
+```
+
+Convert CIE Lab to LCH(ab) `(L, C, H_deg)`.
+
+#### Get Brigtness from HEX
+```python
+brightness_from_hex(hex_color: str) -> float | None
+```
+
+Perceived brightness (Lab L) from a hex color. Higher means brighter.
 
 ### Color families
-- `get_color_family(hue: float, saturation: float, value: float) -> str`
-  - Assign a color family based on HSV, with handling for dark and muted tones. Families include e.g. "Black", "Grey", "White / Off-white", "Red", "Pink", "Orange", "Yellow", "Green", "Turquoise / Teal", "Blue", "Purple / Violet", "Brown", "Unknown".
-- `color_utils.families.COLOR_FAMILY_ID_ORDER`
-  - Reusable order loaded from `src/color_families.json`.
+
+#### Get color family
+
+```python
+get_color_family(hue: float, saturation: float, value: float) -> str
+```
+
+Assign a color family based on HSV, with handling for dark and muted tones. Families include e.g. "Black", "Grey", "White / Off-white", "Red", "Pink", "Orange", "Yellow", "Green", "Turquoise / Teal", "Blue", "Purple / Violet", "Brown", "Unknown".
 
 ### Shades
-- `get_darker_shades(hex_code: str, steps: int = 2, factor: float = 0.8) -> tuple[str, ...]`
-  - Generate `steps` darker hex shades by multiplying V by `factor` iteratively.
+
+#### Get darker shades
+
+```python
+get_darker_shades(hex_code: str, steps: int = 2, factor: float = 0.8) -> tuple[str, ...]
+```
+
+Generate `steps` darker hex shades by multiplying V by `factor` iteratively.
 
 ### Sorting
-- `sort_paints_by_color(paints: list[dict], mode: str = "hue") -> list[dict]`
-  - Sort a list of paint dicts by `"hue"`, `"saturation"`, or `"value"`. Expects `hsv_h`, `hsv_s`, `hsv_v` fields.
-- `sort_paints_by_family_value_hue(paints: list[dict], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark") -> list[dict]`
-  - Group by `color_family_id` (using `COLOR_FAMILY_ID_ORDER`), then sort by HSV V in the chosen order, tie-breaking by HSV H. Returns items enriched with `_hsv` and `_family`.
-- `sort_paints_by_family_lab_brightness(paints: list[dict], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark") -> list[dict]`
-  - Group by `color_family_id` (ordered via `COLOR_FAMILY_ID_ORDER`), then sort by Lab L in the chosen order, tie-breaking by `hsv_h` if present.
+
+#### Sort paints by color
+
+```python
+sort_paints_by_color(paints: list[dict], mode: str = "hue") -> list[dict]
+```
+
+Sort a list of paint dicts by `"hue"`, `"saturation"`, or `"value"`. Expects `hsv_h`, `hsv_s`, `hsv_v` fields.
+
+#### Group paints by color family and sort by hue
+
+```python
+sort_paints_by_family_value_hue(paints: list[dict], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark") -> list[dict]
+```
+
+Group by `color_family_id` (using `COLOR_FAMILY_ID_ORDER`), then sort by HSV V in the chosen order, tie-breaking by HSV H. Returns items enriched with `_hsv` and `_family`.
+
+#### Group paints by color family and sort by LAB brightness
+
+```python
+sort_paints_by_family_lab_brightness(paints: list[dict], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_bright") -> list[dict]
+```
+
+Group by `color_family_id` (ordered via `COLOR_FAMILY_ID_ORDER`), then sort by Lab L in the chosen order, tie-breaking by `hsv_h` if present.
+
+#### Sort HEX colors by brightness
+
+```python
+sort_hex_by_brightness(hex_codes: list[str], order: Literal["bright_to_dark", "dark_to_bright"] = "bright_to_dark") -> list[str]
+```
+
+Sort a list of hex color codes by perceived brightness (Lab L). Invalid hex codes are placed at the end.
 
 ### Qt helper (optional)
-- `color_utils.qcolor.to_qcolor(color) -> QColor`
-  - Convert a hex string, `(r, g, b)` tuple, or `QColor` instance to a `QColor`. Requires PySide6, PyQt6, or a `qt_core.QColor` shim. Raises `RuntimeError` if no `QColor` is available.
+
+#### HEX to QColor
+
+```python
+color_utils.qcolor.to_qcolor(color) -> QColor
+```
+
+Convert a hex string, `(r, g, b)` tuple, or `QColor` instance to a `QColor`. Requires PySide6, PyQt6, or a `qt_core.QColor` shim. Raises `RuntimeError` if no `QColor` is available.
 
 ## Development
 
