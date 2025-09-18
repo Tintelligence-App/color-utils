@@ -35,6 +35,45 @@ def rgb_to_hex(r: int, g: int, b: int) -> str:
     return f"#{r:02X}{g:02X}{b:02X}"
 
 
+def rgb_to_xyz(r: float, g: float, b: float) -> tuple[float, float, float]:
+    """
+    Convert normalized RGB (0-1) to CIE XYZ (D65).
+    """
+
+    def pivot_rgb(c):
+        return ((c + 0.055) / 1.055) ** 2.4 if c > 0.04045 else c / 12.92
+
+    r, g, b = pivot_rgb(r), pivot_rgb(g), pivot_rgb(b)
+    r *= 100
+    g *= 100
+    b *= 100
+
+    # sRGB D65
+    x = r * 0.4124 + g * 0.3576 + b * 0.1805
+    y = r * 0.2126 + g * 0.7152 + b * 0.0722
+    z = r * 0.0193 + g * 0.1192 + b * 0.9505
+    return x, y, z
+
+
+def xyz_to_lab(x: float, y: float, z: float) -> tuple[float, float, float]:
+    """
+    Convert CIE XYZ to CIE Lab (D65).
+    """
+    # Reference white (D65)
+    ref_x, ref_y, ref_z = 95.047, 100.000, 108.883
+    x, y, z = x / ref_x, y / ref_y, z / ref_z
+
+    def pivot_xyz(c):
+        return c ** (1 / 3) if c > 0.008856 else (7.787 * c) + (16 / 116)
+
+    x, y, z = pivot_xyz(x), pivot_xyz(y), pivot_xyz(z)
+
+    l = (116 * y) - 16
+    a = 500 * (x - y)
+    b = 200 * (y - z)
+    return l, a, b
+
+
 def hex_midpoint(c1: Optional[str], c2: Optional[str]) -> Optional[str]:
     """Midpoint of two hex colors as #RRGGBB. Returns None if invalid input."""
     if not c1 or not c2:
@@ -50,40 +89,23 @@ def hex_midpoint(c1: Optional[str], c2: Optional[str]) -> Optional[str]:
     return rgb_to_hex(r, g, b)
 
 
-def rgb_to_lab(r: int, g: int, b: int) -> Tuple[float, float, float]:
-    """Approximate sRGB (D65) integer RGB (0-255) to CIE L*a*b* (L in 0..100)."""
-    rs = r / 255.0
-    gs = g / 255.0
-    bs = b / 255.0
+def rgb_to_lab(r: float, g: float, b: float) -> tuple[float, float, float]:
+    """
+    Convert normalized RGB (0-1) to Lab (L* in 0-100).
+    """
+    x, y, z = rgb_to_xyz(r, g, b)
+    return xyz_to_lab(x, y, z)
 
-    def inv_gamma(u: float) -> float:
-        return ((u + 0.055) / 1.055) ** 2.4 if u > 0.04045 else (u / 12.92)
 
-    rl = inv_gamma(rs)
-    gl = inv_gamma(gs)
-    bl = inv_gamma(bs)
-
-    x = rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375
-    y = rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750
-    z = rl * 0.0193339 + gl * 0.1191920 + bl * 0.9503041
-
-    xn = 0.95047
-    yn = 1.00000
-    zn = 1.08883
-
-    def f(t: float) -> float:
-        return t ** (1 / 3) if t > 0.008856 else (7.787 * t + 16 / 116)
-
-    fx = f(x / xn)
-    fy = f(y / yn)
-    fz = f(z / zn)
-
-    l = 116 * fy - 16
-    # clamp to valid L range to avoid tiny floating point drift
-    l = min(100.0, max(0.0, l))
-    a = 500 * (fx - fy)
-    b = 200 * (fy - fz)
-    return l, a, b
+def lab_to_lch(l: float, a: float, b: float) -> tuple[float, float, float]:
+    """
+    Convert Lab to LCH (L in 0-100, C >=0, H in degrees).
+    """
+    c = math.sqrt(a * a + b * b)
+    h = math.degrees(math.atan2(b, a)) if c > 1e-6 else 0.0
+    if h < 0:
+        h += 360
+    return l, c, h
 
 
 def normalize_lab(
@@ -108,7 +130,7 @@ def normalize_lab(
     return norm_l(l_value), norm_ab(a_value), norm_ab(b_value)
 
 
-def rgb_to_hsl(r: int, g: int, b: int) -> Tuple[int, int, int]:
+def rgb255_to_hsl_percent(r: int, g: int, b: int) -> Tuple[int, int, int]:
     """Convert RGB (0-255) to HSL where H in 0..360, S,L in 0..100 (ints)."""
     rs, gs, bs = r / 255.0, g / 255.0, b / 255.0
     cmax, cmin = max(rs, gs, bs), min(rs, gs, bs)
@@ -129,16 +151,30 @@ def rgb_to_hsl(r: int, g: int, b: int) -> Tuple[int, int, int]:
     return int(round(h) % 360), int(round(s * 100)), int(round(l * 100))
 
 
-def lab_to_lch(
-    l_value: float, a_value: float, b_value: float
-) -> Tuple[float, float, float]:
-    """Convert CIE Lab to LCH(ab). Returns (L, C, H_deg)."""
-    c = math.sqrt((a_value or 0.0) ** 2 + (b_value or 0.0) ** 2)
-    h_rad = math.atan2((b_value or 0.0), (a_value or 0.0))
-    h_deg = math.degrees(h_rad)
-    if h_deg < 0:
-        h_deg += 360.0
-    return float(l_value or 0.0), float(c), float(h_deg)
+def rgb01_to_hsl(r: float, g: float, b: float) -> tuple[float, float, float]:
+    """
+    Convert normalized RGB (0-1) to HSL.
+    """
+    maxc = max(r, g, b)
+    minc = min(r, g, b)
+    l = (minc + maxc) / 2.0
+    if minc == maxc:
+        return 0.0, 0.0, l
+    if l <= 0.5:
+        s = (maxc - minc) / (maxc + minc)
+    else:
+        s = (maxc - minc) / (2.0 - maxc - minc)
+    rc = (maxc - r) / (maxc - minc)
+    gc = (maxc - g) / (maxc - minc)
+    bc = (maxc - b) / (maxc - minc)
+    if r == maxc:
+        h = bc - gc
+    elif g == maxc:
+        h = 2.0 + rc - bc
+    else:
+        h = 4.0 + gc - rc
+    h = (h / 6.0) % 1.0
+    return h * 360.0, s, l
 
 
 def brightness_from_hex(hex_color: str) -> Optional[float]:
