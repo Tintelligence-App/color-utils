@@ -185,3 +185,9 @@ def brightness_from_hex(hex_color: str) -> Optional[float]:
         return None
     l_value, _a, _b = rgb_to_lab(r, g, b)
     return l_value
+
+def relative_luminance(rgb: tuple[float, float, float]) -> float:
+    def adjust(c: float) -> float:
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = map(adjust, rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b

@@ -46,11 +46,11 @@ def test_rgb_to_lab_and_lch_and_normalize():
     assert 0.0 <= H < 360.0
 
 
-def test_rgb_to_hsl_primary_colors():
+def test_rgb255_to_hsl_primary_colors():
     """Hue values for pure red, green, and blue should match expected degrees."""
-    assert cu.rgb_to_hsl(255, 0, 0)[0] == 0
-    assert cu.rgb_to_hsl(0, 255, 0)[0] in (120,)
-    assert cu.rgb_to_hsl(0, 0, 255)[0] in (240,)
+    assert cu.rgb255_to_hsl(255, 0, 0)[0] == 0
+    assert cu.rgb255_to_hsl(0, 255, 0)[0] in (120,)
+    assert cu.rgb255_to_hsl(0, 0, 255)[0] in (240,)
 
 
 def test_brightness_from_hex_monotonic():
