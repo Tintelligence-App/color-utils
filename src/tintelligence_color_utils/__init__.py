@@ -1,14 +1,16 @@
 """tintelligence-color-utils package."""
 
-__version__ = "0.1.9"
+__version__ = "0.1.10"
 
 from .conversion import (
     brightness_from_hex,
+    contrast_ratio,
     hex_midpoint,
     hex_to_hsv,
     hex_to_rgb,
     lab_to_lch,
     normalize_lab,
+    relative_luminance,
     rgb01_to_hsl,
     rgb255_to_hsl_percent,
     rgb_to_hex,
@@ -30,11 +32,13 @@ __all__ = [
     "__version__",
     # conversion
     "brightness_from_hex",
+    "contrast_ratio",
     "hex_midpoint",
     "hex_to_hsv",
     "hex_to_rgb",
     "lab_to_lch",
     "normalize_lab",
+    "relative_luminance",
     "rgb_to_hex",
     "rgb_to_lab",
     "rgb_to_xyz",
