@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tintelligence-color-utils"
-version = "0.1.10"
+version = "0.1.11"
 description = "Utility functions for working with colors (conversion, manipulation, validation)."
 readme = "README.md"
 requires-python = ">=3.9"

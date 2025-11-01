@@ -16,6 +16,14 @@ def get_color_family(hue: float, saturation: float, value: float) -> str:
         return "Brown"
     if 50 <= hue_deg < 95 and saturation < 0.6 and value < 0.6:
         return "Green"
+    # Dark greens that extend into cyan/teal/blue-green range (160-220 degrees)
+    # should still be classified as Green when they're dark enough
+    # Higher saturation + dark = more likely to be a dark green vs blue/teal
+    if 160 <= hue_deg < 220 and value < 0.5:
+        return "Green"
+    # Very saturated colors in the cyan range that are dark are also greens
+    if 160 <= hue_deg < 200 and saturation > 0.4 and value < 0.6:
+        return "Green"
     if hue_deg < 15 or hue_deg >= 345:
         return "Red"
     elif hue_deg < 30:

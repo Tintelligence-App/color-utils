@@ -180,10 +180,10 @@ def rgb01_to_hsl(r: float, g: float, b: float) -> tuple[float, float, float]:
 def brightness_from_hex(hex_color: str) -> Optional[float]:
     """Perceived brightness (Lab L) from a hex color. Higher means brighter."""
     try:
-        r, g, b = (int(x * 255) for x in hex_to_rgb(hex_color))
+        r, g, b = hex_to_rgb(hex_color)  # Already normalized 0-1
     except ValueError:
         return None
-    l_value, _a, _b = rgb_to_lab(r, g, b)
+    l_value, _a, _b = rgb_to_lab(r, g, b)  # rgb_to_lab expects normalized 0-1
     return l_value
 
 
