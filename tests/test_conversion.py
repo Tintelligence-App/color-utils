@@ -36,7 +36,8 @@ def test_hex_to_hsv_and_rgb_to_hex_midpoint():
 
 def test_rgb_to_lab_and_lch_and_normalize():
     """Cover Lab conversion, normalization, and LCH transformation."""
-    l, a, b = cu.rgb_to_lab(255, 255, 255)
+    # rgb_to_lab expects normalized RGB (0-1), not integers (0-255)
+    l, a, b = cu.rgb_to_lab(1.0, 1.0, 1.0)  # White in normalized format
     assert 90.0 <= l <= 100.01
     l2, _a, _b = cu.normalize_lab(l, a, b)
     assert 0.9 <= (l2 or 0.0) <= 1.01
@@ -48,9 +49,10 @@ def test_rgb_to_lab_and_lch_and_normalize():
 
 def test_rgb255_to_hsl_primary_colors():
     """Hue values for pure red, green, and blue should match expected degrees."""
-    assert cu.rgb255_to_hsl(255, 0, 0)[0] == 0
-    assert cu.rgb255_to_hsl(0, 255, 0)[0] in (120,)
-    assert cu.rgb255_to_hsl(0, 0, 255)[0] in (240,)
+    # Function is exported as rgb255_to_hsl_percent
+    assert cu.rgb255_to_hsl_percent(255, 0, 0)[0] == 0
+    assert cu.rgb255_to_hsl_percent(0, 255, 0)[0] in (120,)
+    assert cu.rgb255_to_hsl_percent(0, 0, 255)[0] in (240,)
 
 
 def test_brightness_from_hex_monotonic():

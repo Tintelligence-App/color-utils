@@ -2,6 +2,7 @@
 
 import sys
 import types
+from unittest.mock import patch
 from importlib import import_module
 
 # install a dummy qt_core with QColor for the duration of this test module
@@ -18,14 +19,18 @@ class DummyQColor:
 qt_core.QColor = DummyQColor  # type: ignore
 sys.modules["qt_core"] = qt_core
 
+# Import color_utils.qcolor
 cu_q = import_module("color_utils.qcolor")
 
 
 def test_to_qcolor_with_dummy_qt_core():
     """to_qcolor should accept str, tuple, and QColor instance when QColor is available."""
-    c1 = cu_q.to_qcolor("#FF0000")
-    assert isinstance(c1, DummyQColor)
-    c2 = cu_q.to_qcolor((255, 0, 0))
-    assert isinstance(c2, DummyQColor)
-    c3 = cu_q.to_qcolor(DummyQColor())
-    assert isinstance(c3, DummyQColor)
+    # Patch _resolve_qcolor in the source module
+    from tintelligence_color_utils import qcolor as source_qcolor
+    with patch.object(source_qcolor, '_resolve_qcolor', return_value=DummyQColor):
+        c1 = cu_q.to_qcolor("#FF0000")
+        assert isinstance(c1, DummyQColor)
+        c2 = cu_q.to_qcolor((255, 0, 0))
+        assert isinstance(c2, DummyQColor)
+        c3 = cu_q.to_qcolor(DummyQColor())
+        assert isinstance(c3, DummyQColor)
